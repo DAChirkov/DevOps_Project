@@ -1,5 +1,5 @@
 ##### Azure infrastructure scheme:
-![](https://github.com/DAChirkov/DevOps_Project/blob/8171ff6085caab7424e5adef67d08ece7806cddc/pre-requisites/other/azure_scheme.jpg)  
+![](https://github.com/DAChirkov/DevOps_Project/blob/1ebb55f8885af999f5c75d8d77f1851c2b050f0c/pre-requisites/other/azure_scheme.jpg)  
   
 ##### Required prerequisites for Azure:
 ```  
