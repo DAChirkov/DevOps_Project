@@ -1,3 +1,9 @@
+##### Status of Last Deployments:
+
+###### &emsp; Deployment infrastructure:<br> &emsp; ![Build Status](https://github.com/DAChirkov/DevOps_Project/actions/workflows/azure_terraform.yml/badge.svg)
+
+###### &emsp; Deployment configuration:<br> &emsp; ![Build Status](https://github.com/DAChirkov/DevOps_Project/actions/workflows/azure_ansible.yml/badge.svg)
+
 ##### Azure infrastructure scheme:
 ![](https://github.com/DAChirkov/DevOps_Project/blob/1ebb55f8885af999f5c75d8d77f1851c2b050f0c/pre-requisites/other/azure_scheme.jpg)  
   
