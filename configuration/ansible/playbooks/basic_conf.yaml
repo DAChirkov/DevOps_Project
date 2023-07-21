@@ -1,0 +1,52 @@
+- name: Install and Configuration Servers
+  gather_facts: true
+  become: true
+  serial: 5
+  hosts: all_servers
+  remote_user: azroot
+
+  tasks:
+    - name: Install Git Package
+      apt:
+        name:
+          - git
+        state: present
+        update_cache: yes
+
+    - name: Clone Repository
+      git:
+        repo: https://github.com/DAChirkov/DevOps_Project.git
+        dest: /home/temp/repo
+        force: true
+
+    - name: Install Required Packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: latest
+        update_cache: true

@@ -3,6 +3,15 @@ variable "resource_group_location" {
   description = "Location of the resource group"
 }
 
+variable "resource_availability_set_frontend" {
+  default     = "AVSet_Fronend"
+  description = "Name of the AVSet"
+}
+variable "resource_availability_set_backend" {
+  default     = "AVSet_Backend"
+  description = "Name of the AVSet"
+}
+
 variable "resource_group_name" {
   default     = "RG_AzProject_VMs"
   description = "Name of the resource group"
@@ -48,3 +57,36 @@ variable "resource_nsg_main" {
   description = "Name of the main NSG"
 }
 
+variable "resource_lb_ip" {
+  default     = "LB_ip"
+  description = "Name of the LB ip"
+}
+variable "resource_lb_ip_dnsname" {
+  default     = "LB-Site001"
+  description = "Name of the DNS name for LB"
+}
+variable "resource_front_ip_name" {
+  default     = "LoadBalancerFrontEnd"
+  description = "Name of the Front IP for LB"
+}
+variable "resource_backendpool_name" {
+  default     = "BackendPool"
+  description = "Name of the BackendPool for LB"
+}
+variable "resource_lbrule_name" {
+  default     = "Rule_HTTP"
+  description = "Name of the LB rule"
+}
+
+variable "count_vms_manage" {
+  default     = 1
+  description = "Count of Manage VMs"
+}
+variable "count_vms_frontend" {
+  default     = 2
+  description = "Count of Frontend VMs"
+}
+variable "count_vms_backend" {
+  default     = 2
+  description = "Count of Backend VMs"
+}

@@ -1,18 +1,18 @@
-name: Azure - Prepare Ansible and configuration
+name: Azure_Configuring Services
 on:
-  push:
-    paths:
-      - 'configuration/**'
   workflow_dispatch:      
   workflow_run:
     workflows:
-      - "Deploy an infrastructure to Azure via Terraform"
+      - "Azure_Deploy Infrastructure"
     types:
       - completed
 
+env: 
+    ROOT_PATH: '${{github.workspace}}/configuration/ansible'
+
 jobs:
-  ansible:
-    name: Install Ansible and configuring VMs
+  install_ansible:
+    name: Install Ansible
     runs-on: ubuntu-latest
 
     steps:
@@ -20,44 +20,89 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Install SSH client
-      run: sudo apt update && sudo apt install -y openssh-client
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{secrets.AZURE_SSH_KEY}}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    - name: Wait for 10 seconds
+      run: sleep 10
+     
+    - name: Copy SSH privat-key to VM
+      run: sudo scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa
+        ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com:/home/azroot/.ssh/
+
+    - name: Install Ansible Packages on Remote VM
+      run: ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no -i ~/.ssh/id_rsa' -i
+        ${{env.ROOT_PATH}}/inventory.ini
+        ${{env.ROOT_PATH}}/playbooks/ansible.yaml
+
+
+  install_packages:
+    name: Configuring Servers
+    runs-on: ubuntu-latest
+    needs: [install_ansible]
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{secrets.AZURE_SSH_KEY}}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-    
-    - name: Copy SSH privat-key to VM
-      run: sudo scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa
-        ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com:/home/azroot/.ssh/
-
-    - name: Install Packages on Remote VM
-      run: sudo ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com
-        "sudo apt update &&
-         sudo apt upgrade -y &&
-         sudo apt install -y ansible git"
-
-    - name: Copy Ansible files to VM
-      run: sudo ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com
-        "[ -d "/home/temp/repo" ] &&
-         sudo git -C /home/temp/repo pull ||
-         sudo git clone https://github.com/DAChirkov/DevOps_Project.git /home/temp/repo"
         
-    - name: Copy configuration to the folder
-      run: sudo ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com
-        "sudo mkdir -p /etc/ansible &&
-         sudo cp -r /home/temp/repo/configuration/ansible /etc"
-   
-    - name: Start configuring frontend (Nginx) VMs
+    - name: Configuring Servers
       run: sudo ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com
         "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no -i ~/.ssh/id_rsa' -i
          /etc/ansible/inventory.ini
-         /etc/ansible/playbooks/nginx.yaml"
+         /etc/ansible/playbooks/basic_conf.yaml" 
+         
+  conf_nginx:
+    name: Preparing Nginx 
+    runs-on: ubuntu-latest
+    needs: [install_packages]
+  
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
 
-    - name: Start configuring backend (Apache2) VMs
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{secrets.AZURE_SSH_KEY}}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    - name: Preparing Nginx Servers
       run: sudo ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com
-        "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no -i ~/.ssh/id_rsa' -i
+         "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no -i ~/.ssh/id_rsa' -i
          /etc/ansible/inventory.ini
-         /etc/ansible/playbooks/apache2.yaml"
+         /etc/ansible/playbooks/srv_nginx.yaml"
+ 
+  
+  conf_apache2:
+    name: Preparing Apache2 
+    runs-on: ubuntu-latest
+    needs: [install_packages]
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{secrets.AZURE_SSH_KEY}}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    - name: Preparing Apache2 Servers
+      run: sudo ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa azroot@vm-mng-1.eastus2.cloudapp.azure.com
+         "ansible-playbook --ssh-common-args='-o StrictHostKeyChecking=no -i ~/.ssh/id_rsa' -i
+         /etc/ansible/inventory.ini
+         /etc/ansible/playbooks/srv_apache2.yaml"
+   

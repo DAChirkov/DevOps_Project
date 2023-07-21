@@ -1,0 +1,16 @@
+version: "3.5"
+services:
+  fronend_1:
+    image: nginx:stable
+    container_name: nginx_server
+    volumes:
+      - "/mnt/nginx/conf.d:/etc/nginx/conf.d:ro"
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - vnet1
+
+networks:
+  vnet1:
+    driver: bridge

@@ -1,0 +1,39 @@
+- name: Install and Configuration Ansible
+  become: true
+  serial: 5
+  hosts: ansible
+  remote_user: azroot
+
+  tasks:
+    - name: Install Required Packages
+      apt:
+        name:
+          - git
+          - python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Install Ansible
+      pip:
+        name:
+          - ansible
+        state: present
+
+    - name: Clone Working Repository
+      git:
+        repo: https://github.com/DAChirkov/DevOps_Project.git
+        dest: /home/temp/repo
+        force: true
+
+    - name: Create a New Directory
+      file:
+        path: /mnt/ansible
+        state: directory
+        mode: "0755"
+
+    - name: Copy Configuration to the Folder
+      copy:
+        remote_src: yes
+        directory_mode: yes
+        src: /home/temp/repo/configuration/ansible
+        dest: /etc
