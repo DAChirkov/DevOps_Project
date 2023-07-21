@@ -5,7 +5,11 @@
 ###### &emsp; Deployment configuration:<br> &emsp; ![Build Status](https://github.com/DAChirkov/DevOps_Project/actions/workflows/azure_ansible.yml/badge.svg)
 
 ##### Azure infrastructure scheme:
+<<<<<<< HEAD
 ![](https://github.com/DAChirkov/DevOps_Project/pre-requisites/other/azure_scheme.jpg)  
+=======
+![](https://github.com/DAChirkov/DevOps_Project/blob/1ebb55f8885af999f5c75d8d77f1851c2b050f0c/pre-requisites/other/azure_scheme.jpg)  
+>>>>>>> 0653c030fd771dfa97ca36c7407313c49a560811
   
 ##### Required prerequisites for Azure:
 ```  
