@@ -4,7 +4,7 @@
 
 ###### &emsp; Deployment configuration:<br> &emsp; ![Build Status](https://github.com/DAChirkov/DevOps_Project/actions/workflows/azure_ansible.yml/badge.svg)
 
-##### Azure infrastructure scheme:
+##### Azure infrastructure scheme (HA of Web Service with Frontend and Backend parts):
 ![](https://github.com/DAChirkov/DevOps_Project/blob/40662e27bc3669af6e2ad5814c6ee38120027b59/pre-requisites/other/azure_scheme.jpg) 
   
 ##### Required prerequisites for Azure:
